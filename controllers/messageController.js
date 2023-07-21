@@ -25,7 +25,15 @@ export const postMessages = asyncHandler(async (req, res) => {
     const savedMessage = await newMessage.save();
 
     if (savedMessage) {
-        global.io.emit('message', savedMessage);
+        global.io.emit('message', {
+            _id: savedMessage._id,
+            user: {
+                _id: user._id,
+                username: user.username
+            },
+            message: savedMessage.message,
+            createdAt: savedMessage.createdAt
+        });
         return res.status(201).json({ message: 'Message created' })
     } else {
         return res.status(400).json({ message: 'Invalid message data received' })
